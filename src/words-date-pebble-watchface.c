@@ -43,7 +43,7 @@ void slide_out(PropertyAnimation *animation, CommonWordsData *layer) {
 void slide_in(PropertyAnimation *animation, CommonWordsData *layer) {
   GRect to_frame = layer_get_frame(&layer->label.layer);
   GRect from_frame = GRect(2*window.layer.frame.size.w, to_frame.origin.y,
-                          window.layer.frame.size.w, to_frame.size.h);
+                            window.layer.frame.size.w, to_frame.size.h);
 
   layer_set_frame(&layer->label.layer, from_frame);
   text_layer_set_text(&layer->label, layer->buffer);
@@ -76,7 +76,7 @@ static void handle_minute_tick(AppContextRef app_ctx, PebbleTickEvent* e) {
   PblTm *t = e->tick_time;
   if((e->units_changed & MINUTE_UNIT) == MINUTE_UNIT) {
     if (!(t->tm_min == 14 || t->tm_min == 17 || t->tm_min == 18
-            || t->tm_min == 19)) {
+          || t->tm_min == 19)) {
       update_layer(&layers[0]);
     }
     if (t->tm_min % 10 == 0 || (t->tm_min > 10 && t->tm_min < 20)
