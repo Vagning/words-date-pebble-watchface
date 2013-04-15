@@ -3,7 +3,7 @@
 
 #define MY_UUID { 0xF6, 0x93, 0x61, 0x62, 0xCA, 0xC0, 0x40, 0xEC, 0xBB, 0x9B, 0x9C, 0xBA, 0x8F, 0x7B, 0xD4, 0xE6 }
 PBL_APP_INFO(MY_UUID,
-             "Words + Date", "James Hrisho",
+             "Words + Date", "Daniel Hertz + James Hrisho",
              1, 0, /* App version */
              RESOURCE_ID_IMAGE_MENU_ICON,
              APP_INFO_WATCH_FACE);
