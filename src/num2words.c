@@ -89,7 +89,7 @@ void fuzzy_minutes_to_words(PblTm *t, char* words) {
   memset(words, 0, BUFFER_SIZE);
 
   //Is it midnight? or noon
-  if (fuzzy_minutes != 0 || (fuzzy_hours != 12 && fuzzy_hours != 0))) {
+  if (fuzzy_minutes != 0 || (fuzzy_hours != 12 && fuzzy_hours != 0)) {
     //is it the top of the hour?
     if(fuzzy_minutes == 0){
       remaining -= append_string(words, remaining, STR_OH_CLOCK);
