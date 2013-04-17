@@ -75,7 +75,7 @@ void update_layer(CommonWordsData *layer) {
 static void handle_minute_tick(AppContextRef app_ctx, PebbleTickEvent* e) {
   PblTm *t = e->tick_time;
   if((e->units_changed & MINUTE_UNIT) == MINUTE_UNIT) {
-    if ((16 > t->tm_min || t->tm_min > 19)
+    if ((17 > t->tm_min || t->tm_min > 19)
           && (11 > t->tm_min || t->tm_min > 13)) {
       update_layer(&layers[0]);
     }
