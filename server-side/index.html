@@ -1,0 +1,38 @@
+<html>
+<head>
+	<title>Pebble Watchface customizer</title>
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<h3 style='padding-bottom:10px'>Choose your options!</h3>
+	<p>
+		<button type='button'class="option btn btn-default" data.option="battery">Battery Tap</button>
+	</p>
+	<p>
+		<button type='button' class="option btn btn-default" data.option="vibrate">Vibrate (Dis)Connect</button>
+	</p>
+	<p>
+		<button type='button' class="submit btn btn-success">Submit</button>
+	</p>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		var dictionary = {'battery':0, 'vibrate':0};
+		$().ready(function() {
+
+		    $(".option").click(function(){
+		    	var new_val = dictionary[$(this).attr("data.option")] + 1;
+		        dictionary[$(this).attr("data.option")] = new_val % 2;
+		        $(this).toggleClass("btn-primary");
+		    });
+
+		    $('.submit').click(function() {
+		    	var location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(dictionary));
+				window.location.href = location;
+		    });
+		});
+	</script>
+</body>
+</html>
+
