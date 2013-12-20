@@ -1,7 +1,7 @@
 Pebble.addEventListener("showConfiguration",
                      function(e) {
                      	console.log("connect!" + e.ready);
-                        Pebble.openURL("https://raw.github.com/Dhertz/words-date-pebble-watchface/Text-time/server-side/");
+                        Pebble.openURL("http://dhertz.github.io/words-date-pebble-watchface/");
                         console.log(e.type);
 					 });
 
