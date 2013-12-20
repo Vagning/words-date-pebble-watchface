@@ -20,11 +20,6 @@
         "type": "png",
         "name": "IMAGE_MENU_ICON",
         "file": "images/menu_icon_words.png"
-      },
-      {
-        "type": "font",
-        "name": "FONT_GOTHAM_24_LIGHT",
-        "file": "fonts/gotham_light.ttf"
       }
     ]
   }

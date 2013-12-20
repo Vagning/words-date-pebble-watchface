@@ -1,7 +1,6 @@
 #include "pebble.h"
 #include "num2words.h"
 
-#define MY_UUID { 0xF6, 0x93, 0x61, 0x62, 0xCA, 0xC0, 0x40, 0xEC, 0xBB, 0x9B, 0x9C, 0xBA, 0x8F, 0x7B, 0xD4, 0xE6 }
 #define TIME_SLOT_ANIMATION_DURATION 700
 #define NUM_LAYERS 4
 #define UNUSED(x) (void)(x)
@@ -246,7 +245,7 @@ void handle_init() {
 
 //Date
   init_layer(&layers[DATE], GRect(0, 140, frame.size.w + 10, 28),
-                    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT)));
+                    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
 
   init_layer(&layers[BATTERY], GRect(0, 38, frame.size.w, 50), 
     fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));

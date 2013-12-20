@@ -2,7 +2,6 @@ Pebble.addEventListener("showConfiguration",
                      function(e) {
                      	console.log("connect!" + e.ready);
                         Pebble.openURL("http://192.168.1.13:8000/server-side/");
-                        //Pebble.openURL("http://www.google.com");
                         console.log(e.type);
 					 });
 
