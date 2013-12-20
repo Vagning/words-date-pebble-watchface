@@ -244,11 +244,11 @@ void handle_init() {
                     fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
 
 //Date
-  init_layer(&layers[DATE], GRect(0, 140, frame.size.w + 10, 28),
+  init_layer(&layers[DATE], GRect(0, 114, frame.size.w, 50),
                     fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
 
   init_layer(&layers[BATTERY], GRect(0, 38, frame.size.w, 50), 
-    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
+                    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
 
 //show your face
   time_t now = time(NULL);
