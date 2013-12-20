@@ -246,8 +246,7 @@ void handle_init() {
 
 //Date
   init_layer(&layers[DATE], GRect(0, 140, frame.size.w + 10, 28),
-                    fonts_load_custom_font(resource_get_handle(
-                      RESOURCE_ID_FONT_GOTHAM_24_LIGHT)));
+                    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT)));
 
   init_layer(&layers[BATTERY], GRect(0, 38, frame.size.w, 50), 
     fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
