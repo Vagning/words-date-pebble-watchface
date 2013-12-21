@@ -20,7 +20,8 @@ static uint8_t sync_buffer[32];
 
 enum SettingsKey {
   WATCHFACE_BATT_KEY = 0x0,
-  WATCHFACE_BLUE_KEY = 0x1
+  WATCHFACE_BLUE_KEY = 0x1,
+  WATCHFACE_LOW_DATE = 0x2
 };
 
 static Window *window;
@@ -207,6 +208,9 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       } else {
         bluetooth_connection_service_unsubscribe();
       }
+      break;
+    case WATCHFACE_LOW_DATE:
+      persist_write_int(789, new_tuple->value->uint8);
       break;
   }
 }
