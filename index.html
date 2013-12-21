@@ -1,4 +1,4 @@
-<html>
+<html manifest="index.appcache">
 <head>
 	<title>Pebble Watchface customizer</title>
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
@@ -19,6 +19,13 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/javascript">
 		$().ready(function() {
+			window.applicationCache.addEventListener('updateready', onUpdateReady);
+			function onUpdateReady() {
+				if(window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+					alert("Changed!")
+  					window.location.reload();
+  				}
+			}
 			var dictionary;
 			try {
 				dictionary = JSON.parse(localStorage["dictionary"]);
