@@ -186,7 +186,7 @@ void bluetooth_handler(bool connected) {
 }
 
 static void sync_error_callback(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
-  snprintf(layers[BATTERY].buffer, BUFFER_SIZE, "UhOh %d", app_message_error);
+  app_log(APP_LOG_LEVEL_WARNING, "words-date-pebble-watchface", 189, "Appsync failed: %d", app_message_error);
   run_notification();
 }
 
