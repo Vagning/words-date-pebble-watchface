@@ -1,7 +1,6 @@
 Pebble.addEventListener("showConfiguration",
                      function(e) {
-                        //Pebble.openURL("http://dhertz.github.io/words-date-pebble-watchface/");
-                        Pebble.openURL("http://192.168.1.13:8000");
+                        Pebble.openURL("http://dhertz.github.io/words-date-pebble-watchface/");
 					 });
 
 Pebble.addEventListener("webviewclosed",
