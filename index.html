@@ -25,7 +25,6 @@
 			window.applicationCache.addEventListener('updateready', onUpdateReady);
 			function onUpdateReady() {
 				if(window.applicationCache.status === window.applicationCache.UPDATEREADY) {
-					alert("Changed!")
   					window.location.reload();
   				}
 			}
