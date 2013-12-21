@@ -16,12 +16,12 @@ enum layer_names {
 };
 
 static AppSync sync;
-static uint8_t sync_buffer[32];
+static uint8_t sync_buffer[64];
 
 enum SettingsKey {
-  WATCHFACE_BATT_KEY = 0x0,
-  WATCHFACE_BLUE_KEY = 0x1,
-  WATCHFACE_LOW_DATE = 0x2
+  WATCHFACE_BATT_KEY = 0,
+  WATCHFACE_BLUE_KEY = 1,
+  WATCHFACE_LOW_DATE = 2
 };
 
 static Window *window;
@@ -211,6 +211,11 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       break;
     case WATCHFACE_LOW_DATE:
       persist_write_int(789, new_tuple->value->uint8);
+      time_t now = time(NULL);
+      struct tm *t = localtime(&now);
+      layers[DATE].update(t, layers[DATE].buffer);
+      slide_in(&layers[DATE].in_animation, &layers[DATE]);
+      animation_schedule(&layers[DATE].in_animation.animation);
       break;
   }
 }
@@ -221,16 +226,6 @@ void handle_init() {
   const bool animated = true;
   window_stack_push(window, animated);
   window_set_background_color(window, GColorBlack);
-
-  Tuplet initial_values[] = {
-    TupletInteger(WATCHFACE_BATT_KEY, 0),
-    TupletInteger(WATCHFACE_BLUE_KEY, 0)
-  };
-
-  app_message_open(64, 64);
-
-  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values, ARRAY_LENGTH(initial_values),
-      sync_tuple_changed_callback, sync_error_callback, NULL);
 
   Layer *root_layer = window_get_root_layer(window);
   GRect frame = layer_get_frame(root_layer);
@@ -258,13 +253,25 @@ void handle_init() {
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
 
-  for (int i = 0; i < NUM_LAYERS; ++i)
+  for (int i = 0; i < NUM_LAYERS - 1; ++i)
+  //so we aren't animating the date layer twice.
   {
     layers[i].update(t, layers[i].buffer);
     slide_in(&layers[i].in_animation, &layers[i]);
     animation_schedule(&layers[i].in_animation.animation);
   }
   tick_timer_service_subscribe(MINUTE_UNIT, &handle_minute_tick);
+
+  app_message_open(64, 64);
+
+  Tuplet initial_values[] = {
+    TupletInteger(WATCHFACE_BATT_KEY, 0),
+    TupletInteger(WATCHFACE_BLUE_KEY, 0),
+    TupletInteger(WATCHFACE_LOW_DATE, 0)
+  };
+
+  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values, ARRAY_LENGTH(initial_values),
+      sync_tuple_changed_callback, sync_error_callback, NULL);
 }
 
 static void do_deinit(void) {
