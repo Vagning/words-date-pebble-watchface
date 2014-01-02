@@ -11,8 +11,13 @@ enum layer_names {
   MINUTES,
   TENS,
   HOURS,
-  DATE,
-  BATTERY
+  DATE
+};
+
+enum batt_stats {
+  CHARGE = MINUTES,
+  CHAR_STAT = TENS,
+  PERCENT = HOURS
 };
 
 static AppSync sync;
@@ -38,8 +43,7 @@ static struct CommonWordsData layers[NUM_LAYERS + 1] =
 {{ .update = &fuzzy_sminutes_to_words },
  { .update = &fuzzy_minutes_to_words },
  { .update = &fuzzy_hours_to_words },
- { .update = &fuzzy_dates_to_words, .buffer = "Xxx Xxx 00" },
- { .update = NULL}};
+ { .update = &fuzzy_dates_to_words, .buffer = "Xxx Xxx 00" }};
 
 void slide_out(PropertyAnimation *animation, CommonWordsData *layer) {
   Layer* text_layer = text_layer_get_layer(layer->label);
@@ -135,12 +139,15 @@ void time_slide_in(Animation *slide_out_animation, bool finished,
 }
 
 void clear_batt() {
-  slide_out(&layers[BATTERY].out_animation, &layers[BATTERY]);
-  animation_set_handlers(&layers[BATTERY].out_animation.animation,
+  for (int i = 0; i < NUM_LAYERS - 1; ++i)
+  {
+    slide_out(&layers[i].out_animation, &layers[i]);
+    animation_set_handlers(&layers[PERCENT].out_animation.animation,
       (AnimationHandlers){
         .stopped = (AnimationStoppedHandler)time_slide_in
       }, (void *) NULL);
-  animation_schedule(&layers[BATTERY].out_animation.animation);
+    animation_schedule(&layers[i].out_animation.animation);
+  }
 }
 
 void batt_slide_in(Animation *slide_out_animation, bool finished,
@@ -148,8 +155,24 @@ void batt_slide_in(Animation *slide_out_animation, bool finished,
   UNUSED(slide_out_animation);
   UNUSED(finished);
   UNUSED(context);
-  slide_in(&layers[BATTERY].in_animation, &layers[BATTERY]);
-  animation_schedule(&layers[BATTERY].in_animation.animation);
+  
+  BatteryChargeState curr_batt = battery_state_service_peek();
+  char *charging = "";
+  char *status = "";
+  if (curr_batt.is_charging || curr_batt.is_plugged) {
+    charging = "on";
+    status = "charge";
+  }
+
+  snprintf(layers[PERCENT].buffer, BUFFER_SIZE, "%d%%", curr_batt.charge_percent);
+  snprintf(layers[CHAR_STAT].buffer, BUFFER_SIZE, "%s", charging);
+  snprintf(layers[CHARGE].buffer, BUFFER_SIZE, "%s", status);
+  
+  for (int i = 0; i < NUM_LAYERS - 1; ++i)
+  {
+    slide_in(&layers[i].in_animation, &layers[i]);
+    animation_schedule(&layers[i].in_animation.animation);
+  }
 }
 
 void run_notification() {
@@ -163,14 +186,13 @@ void run_notification() {
       }, (void *) NULL);
     animation_schedule(&layers[i].out_animation.animation);
   }
-  app_timer_register (1500, &clear_batt ,NULL);
+  app_timer_register (1750, &clear_batt ,NULL);
 }
 
 void accel_tap_handler(AccelAxisType axis, int32_t blah) {
   UNUSED(blah);
   if (!persist_exists(123) || !persist_read_int(123))
     return;
-  snprintf(layers[BATTERY].buffer, BUFFER_SIZE, "%d%%", battery_state_service_peek().charge_percent);
   run_notification();
 }
 
@@ -244,9 +266,6 @@ void handle_init() {
 
 //Date
   init_layer(&layers[DATE], GRect(0, 114, frame.size.w, 50),
-                    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
-
-  init_layer(&layers[BATTERY], GRect(0, 38, frame.size.w, 50), 
                     fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
 
 //show your face
