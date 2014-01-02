@@ -15,6 +15,8 @@ enum layer_names {
 };
 
 enum batt_stats {
+  CHARGE = MINUTES,
+  CHAR_STAT = TENS,
   PERCENT = HOURS
 };
 
@@ -136,12 +138,15 @@ void time_slide_in(Animation *slide_out_animation, bool finished,
 }
 
 void clear_batt() {
-  slide_out(&layers[PERCENT].out_animation, &layers[PERCENT]);
-  animation_set_handlers(&layers[PERCENT].out_animation.animation,
+  for (int i = 0; i < NUM_LAYERS - 1; ++i)
+  {
+    slide_out(&layers[i].out_animation, &layers[i]);
+    animation_set_handlers(&layers[PERCENT].out_animation.animation,
       (AnimationHandlers){
         .stopped = (AnimationStoppedHandler)time_slide_in
       }, (void *) NULL);
-  animation_schedule(&layers[PERCENT].out_animation.animation);
+    animation_schedule(&layers[i].out_animation.animation);
+  }
 }
 
 void batt_slide_in(Animation *slide_out_animation, bool finished,
@@ -149,9 +154,24 @@ void batt_slide_in(Animation *slide_out_animation, bool finished,
   UNUSED(slide_out_animation);
   UNUSED(finished);
   UNUSED(context);
-  snprintf(layers[PERCENT].buffer, BUFFER_SIZE, "%d%%", battery_state_service_peek().charge_percent);
-  slide_in(&layers[PERCENT].in_animation, &layers[PERCENT]);
-  animation_schedule(&layers[PERCENT].in_animation.animation);
+  
+  BatteryChargeState curr_batt = battery_state_service_peek();
+  char *charging = "";
+  char *status = "";
+  if (curr_batt.is_charging || curr_batt.is_plugged) {
+    charging = "on";
+    status = "charge";
+  }
+
+  snprintf(layers[PERCENT].buffer, BUFFER_SIZE, "%d%%", curr_batt.charge_percent);
+  snprintf(layers[CHAR_STAT].buffer, BUFFER_SIZE, "%s", charging);
+  snprintf(layers[CHARGE].buffer, BUFFER_SIZE, "%s", status);
+  
+  for (int i = 0; i < NUM_LAYERS - 1; ++i)
+  {
+    slide_in(&layers[i].in_animation, &layers[i]);
+    animation_schedule(&layers[i].in_animation.animation);
+  }
 }
 
 void run_notification() {
@@ -165,7 +185,7 @@ void run_notification() {
       }, (void *) NULL);
     animation_schedule(&layers[i].out_animation.animation);
   }
-  app_timer_register (1500, &clear_batt ,NULL);
+  app_timer_register (1750, &clear_batt ,NULL);
 }
 
 void accel_tap_handler(AccelAxisType axis, int32_t blah) {
@@ -188,7 +208,7 @@ void bluetooth_handler(bool connected) {
 }
 
 static void sync_error_callback(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
-  snprintf(layers[MINUTES].buffer, BUFFER_SIZE, "UhOh %d", app_message_error);
+  snprintf(layers[PERCENT].buffer, BUFFER_SIZE, "UhOh %d", app_message_error);
   run_notification();
 }
 
