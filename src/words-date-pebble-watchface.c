@@ -11,8 +11,11 @@ enum layer_names {
   MINUTES,
   TENS,
   HOURS,
-  DATE,
-  BATTERY
+  DATE
+};
+
+enum batt_stats {
+  PERCENT = HOURS
 };
 
 static AppSync sync;
@@ -33,12 +36,11 @@ typedef struct CommonWordsData {
   char buffer[BUFFER_SIZE];
 } CommonWordsData;
 
-static struct CommonWordsData layers[NUM_LAYERS + 1] =
+static struct CommonWordsData layers[NUM_LAYERS] =
 {{ .update = &fuzzy_sminutes_to_words },
  { .update = &fuzzy_minutes_to_words },
  { .update = &fuzzy_hours_to_words },
- { .update = &fuzzy_dates_to_words, .buffer = "Xxx Xxx 00" },
- { .update = NULL}};
+ { .update = &fuzzy_dates_to_words, .buffer = "Xxx Xxx 00" }};
 
 void slide_out(PropertyAnimation *animation, CommonWordsData *layer) {
   Layer* text_layer = text_layer_get_layer(layer->label);
@@ -134,12 +136,12 @@ void time_slide_in(Animation *slide_out_animation, bool finished,
 }
 
 void clear_batt() {
-  slide_out(&layers[BATTERY].out_animation, &layers[BATTERY]);
-  animation_set_handlers(&layers[BATTERY].out_animation.animation,
+  slide_out(&layers[PERCENT].out_animation, &layers[PERCENT]);
+  animation_set_handlers(&layers[PERCENT].out_animation.animation,
       (AnimationHandlers){
         .stopped = (AnimationStoppedHandler)time_slide_in
       }, (void *) NULL);
-  animation_schedule(&layers[BATTERY].out_animation.animation);
+  animation_schedule(&layers[PERCENT].out_animation.animation);
 }
 
 void batt_slide_in(Animation *slide_out_animation, bool finished,
@@ -147,8 +149,9 @@ void batt_slide_in(Animation *slide_out_animation, bool finished,
   UNUSED(slide_out_animation);
   UNUSED(finished);
   UNUSED(context);
-  slide_in(&layers[BATTERY].in_animation, &layers[BATTERY]);
-  animation_schedule(&layers[BATTERY].in_animation.animation);
+  snprintf(layers[PERCENT].buffer, BUFFER_SIZE, "%d%%", battery_state_service_peek().charge_percent);
+  slide_in(&layers[PERCENT].in_animation, &layers[PERCENT]);
+  animation_schedule(&layers[PERCENT].in_animation.animation);
 }
 
 void run_notification() {
@@ -169,7 +172,6 @@ void accel_tap_handler(AccelAxisType axis, int32_t blah) {
   UNUSED(blah);
   if (!persist_exists(123) || !persist_read_int(123))
     return;
-  snprintf(layers[BATTERY].buffer, BUFFER_SIZE, "%d%%", battery_state_service_peek().charge_percent);
   run_notification();
 }
 
@@ -186,7 +188,7 @@ void bluetooth_handler(bool connected) {
 }
 
 static void sync_error_callback(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
-  snprintf(layers[BATTERY].buffer, BUFFER_SIZE, "UhOh %d", app_message_error);
+  snprintf(layers[MINUTES].buffer, BUFFER_SIZE, "UhOh %d", app_message_error);
   run_notification();
 }
 
@@ -247,9 +249,6 @@ void handle_init() {
   init_layer(&layers[DATE], GRect(0, 114, frame.size.w, 50),
                     fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
 
-  init_layer(&layers[BATTERY], GRect(0, 38, frame.size.w, 50), 
-                    fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
-
 //show your face
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
@@ -269,7 +268,7 @@ static void do_deinit(void) {
   if (persist_exists(456) && persist_read_int(456))
     bluetooth_connection_service_unsubscribe();
   app_sync_deinit(&sync);
-  for (int i = 0; i < NUM_LAYERS + 1; ++i) {
+  for (int i = 0; i < NUM_LAYERS; ++i) {
     text_layer_destroy(layers[i].label);
   }
   window_destroy(window);
