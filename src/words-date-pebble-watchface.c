@@ -21,7 +21,7 @@ enum batt_stats {
 };
 
 static AppSync sync;
-static uint8_t sync_buffer[64];
+uint8_t *sync_buffer;
 
 enum SettingsKey {
   WATCHFACE_BATT_KEY = 0,
@@ -283,13 +283,22 @@ void handle_init() {
 
   app_message_open(64, 64);
 
+  int batt = 0, blue = 0, low = 0;
+  if (persist_exists(123) && persist_read_int(123))
+    batt = 1;
+  if (persist_exists(456) && persist_read_int(456))
+    blue = 1;
+  if (persist_exists(789) && persist_read_int(789))
+    low  = 1;
+
   Tuplet initial_values[] = {
-    TupletInteger(WATCHFACE_BATT_KEY, 0),
-    TupletInteger(WATCHFACE_BLUE_KEY, 0),
-    TupletInteger(WATCHFACE_LOW_DATE, 0)
+    TupletInteger(WATCHFACE_BATT_KEY, batt),
+    TupletInteger(WATCHFACE_BLUE_KEY, blue),
+    TupletInteger(WATCHFACE_LOW_DATE, low)
   };
 
-  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values, ARRAY_LENGTH(initial_values),
+  sync_buffer = calloc(sizeof(uint8_t), 64);
+  app_sync_init(&sync, sync_buffer, 64, initial_values, ARRAY_LENGTH(initial_values),
       sync_tuple_changed_callback, sync_error_callback, NULL);
 }
 
@@ -299,6 +308,7 @@ static void do_deinit(void) {
   if (persist_exists(456) && persist_read_int(456))
     bluetooth_connection_service_unsubscribe();
   app_sync_deinit(&sync);
+  free(sync_buffer);
   for (int i = 0; i < NUM_LAYERS + 1; ++i) {
     text_layer_destroy(layers[i].label);
   }
