@@ -20,7 +20,7 @@ enum batt_stats {
   PERCENT = HOURS
 };
 
-static AppSync sync;
+AppSync *sync;
 uint8_t *sync_buffer;
 
 enum SettingsKey {
@@ -29,7 +29,7 @@ enum SettingsKey {
   WATCHFACE_LOW_DATE = 2
 };
 
-static Window *window;
+Window *window;
 
 typedef struct CommonWordsData {
   TextLayer *label;
@@ -39,11 +39,7 @@ typedef struct CommonWordsData {
   char buffer[BUFFER_SIZE];
 } CommonWordsData;
 
-static struct CommonWordsData layers[NUM_LAYERS + 1] =
-{{ .update = &fuzzy_sminutes_to_words },
- { .update = &fuzzy_minutes_to_words },
- { .update = &fuzzy_hours_to_words },
- { .update = &fuzzy_dates_to_words, .buffer = "Xxx Xxx 00" }};
+CommonWordsData *layers;
 
 void slide_out(PropertyAnimation *animation, CommonWordsData *layer) {
   Layer* text_layer = text_layer_get_layer(layer->label);
@@ -245,12 +241,18 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
 void handle_init() {
   TAPPED = false;
   window = window_create();
-  const bool animated = true;
+  const bool animated = false;
   window_stack_push(window, animated);
   window_set_background_color(window, GColorBlack);
 
   Layer *root_layer = window_get_root_layer(window);
   GRect frame = layer_get_frame(root_layer);
+
+  layers = malloc(sizeof(CommonWordsData) * NUM_LAYERS);
+  layers[0].update = &fuzzy_sminutes_to_words;
+  layers[1].update = &fuzzy_minutes_to_words;
+  layers[2].update = &fuzzy_hours_to_words;
+  layers[3].update = &fuzzy_dates_to_words;
 
 // single digits
   init_layer(&layers[MINUTES],GRect(0, 76, frame.size.w, 50),
@@ -298,7 +300,9 @@ void handle_init() {
   };
 
   sync_buffer = calloc(sizeof(uint8_t), 64);
-  app_sync_init(&sync, sync_buffer, 64, initial_values, ARRAY_LENGTH(initial_values),
+  sync = malloc(sizeof(AppSync));
+
+  app_sync_init(sync, sync_buffer, 64, initial_values, ARRAY_LENGTH(initial_values),
       sync_tuple_changed_callback, sync_error_callback, NULL);
 }
 
@@ -307,11 +311,16 @@ static void do_deinit(void) {
     accel_tap_service_unsubscribe();
   if (persist_exists(456) && persist_read_int(456))
     bluetooth_connection_service_unsubscribe();
-  app_sync_deinit(&sync);
+  
+  app_sync_deinit(sync);
+  free(sync);
   free(sync_buffer);
-  for (int i = 0; i < NUM_LAYERS + 1; ++i) {
+  
+  for (int i = 0; i < NUM_LAYERS; ++i) {
     text_layer_destroy(layers[i].label);
   }
+  
+  free(layers);
   window_destroy(window);
 }
 
