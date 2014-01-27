@@ -1,6 +1,8 @@
 CACHE MANIFEST
 
-#VERSION: 4
+#VERSION: 5
 index.html
 http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css
 http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
+http://d3rrgxxoyz0alr.cloudfront.net/assets/PFDinDisplayPro-Light-2fb227e9a8cc14568a4dcad3c6f030a8.ttf
+http://d3rrgxxoyz0alr.cloudfront.net/assets/PFDinDisplayPro-Reg-55f3bd1e3a910a3b20247e3f5613920a.ttf

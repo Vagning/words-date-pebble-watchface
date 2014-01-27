@@ -5,16 +5,52 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+<style>
+	@font-face{font-family:'PFD-Light';src:url("http://d3rrgxxoyz0alr.cloudfront.net/assets/PFDinDisplayPro-Light-2fb227e9a8cc14568a4dcad3c6f030a8.ttf") format("truetype")}.font-light{font-family:PFD-Light,'Helvetica Neue', Helvetica, Arial, sans-serif;font-weight:lighter;font-style:normal}
+	@font-face{font-family:'PFD-Regular';src:url("http://d3rrgxxoyz0alr.cloudfront.net/assets/PFDinDisplayPro-Reg-55f3bd1e3a910a3b20247e3f5613920a.ttf") format("truetype")}.font-regular{font-family:PFD-Regular,'Helvetica Neue', Helvetica, Arial, sans-serif;font-weight:normal;font-style:normal}
+	body {
+		background-color:#333;
+		font-family: PFD-Light, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
+	h3 {
+		color:white;
+		font-family: PFD-Regular, "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+	}
+	.btn-default {
+		color:#ddd;
+		background-color:#555;
+		border-color:#222;
+		border-width: 2px;
+	}
+	.btn-default:hover {
+		color:#333;
+		background-color:white;
+		border-color:#ff4700;
+		border-width: 2px;
+	}
+	.btn-primary {
+		color:#ff4700;
+		background-color:#111;
+		border-color:#ff4700;
+		border-width: 2px;
+	}
+	.btn-success, .btn-success:hover {
+		color:white;
+		background-color:#ff4700;
+		border-color:#222;
+		border-width: 2px;
+	}
+</style>
 <body>
-	<h3 style='padding-bottom:10px'>Choose your options!</h3>
+	<h3 style='padding-bottom:10px'>CHOOSE YOUR OPTIONS</h3>
 	<p>
-		<button type='button'class="option btn btn-default" id="battery">Battery Tap</button>
+		<button type='button'class="option btn btn-default" id="battery">BATTERY TAP</button>
 	</p>
 	<p>
-		<button type='button' class="option btn btn-default" id="vibrate">Vibrate (Dis)Connect</button>
+		<button type='button' class="option btn btn-default" id="vibrate">VIBRATE (DIS)CONNECT</button>
 	</p>
 	<p>
-		<button type='button' class="option btn btn-default" id="lowdate">Lower case month</button>
+		<button type='button' class="option btn btn-default" id="lowdate">LOWER CASE MONTH</button>
 	</p>
 	<p>
 		<button type='button' class="submit btn btn-success">Submit</button>
