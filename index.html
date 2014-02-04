@@ -47,6 +47,9 @@
 		<button type='button' class="option btn btn-default" id="lowdate">LOWER CASE MONTH</button>
 	</p>
 	<p>
+		<button type='button' class="option btn btn-default" id="invert">INVERT COLOR</button>
+	</p>
+	<p>
 		<button type='button' class="submit btn btn-success">Submit</button>
 	</p>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -63,7 +66,7 @@
 				dictionary = JSON.parse(localStorage["dictionary"]);
 			}
 			catch(e) {
-				dictionary = {'battery':0, 'vibrate':0, 'lowdate': 0};
+				dictionary = {'battery':0, 'vibrate':0, 'lowdate': 0, 'invert': 0};
 			}
 			for(option in dictionary) {
 				if(dictionary[option])
