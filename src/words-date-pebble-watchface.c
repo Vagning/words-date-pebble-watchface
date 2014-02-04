@@ -322,8 +322,10 @@ void handle_init() {
   int batt = 0, blue = 0, low = 0, invert = 0, apos = 0;
   if (persist_exists(123) && persist_read_int(123))
     batt = 1;
+    accel_tap_service_subscribe(&accel_tap_handler);
   if (persist_exists(456) && persist_read_int(456))
     blue = 1;
+    bluetooth_connection_service_subscribe (&bluetooth_handler);
   if (persist_exists(789) && persist_read_int(789))
     low  = 1;
   if (persist_exists(101) && persist_read_int(101))
