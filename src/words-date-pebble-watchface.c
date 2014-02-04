@@ -122,10 +122,10 @@ static void handle_minute_tick(struct tm *t, TimeUnits units_changed) {
 }
 
 void init_layer(CommonWordsData *layer, GRect rect, GFont font) {
-  GColor color = persist_exists(101) && persist_read_int(101) ? GColorBlack : GColorClear;
+  GColor color = persist_exists(101) && persist_read_int(101) ? GColorWhite : GColorBlack;
   layer->label = text_layer_create(rect);
   text_layer_set_background_color(layer->label, color);
-  text_layer_set_text_color(layer->label, !color);
+  text_layer_set_text_color(layer->label, (color % 2) + 1);
   text_layer_set_font(layer->label, font);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(layer->label));
 }
@@ -252,7 +252,7 @@ void handle_init() {
   window = window_create();
   const bool animated = false;
   window_stack_push(window, animated);
-  GColor color = persist_exists(101) && persist_read_int(101) ? GColorBlack : GColorClear;
+  GColor color = persist_exists(101) && persist_read_int(101) ? GColorWhite : GColorBlack;
   window_set_background_color(window, color);
 
   Layer *root_layer = window_get_root_layer(window);
