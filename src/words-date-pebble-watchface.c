@@ -27,7 +27,7 @@ enum SettingsKey {
   WATCHFACE_BATT_KEY = 0,
   WATCHFACE_BLUE_KEY = 1,
   WATCHFACE_LOW_DATE = 2,
-  INVERT = 3
+  WATCHFACE_INVERT = 3
 };
 
 Window *window;
@@ -122,10 +122,10 @@ static void handle_minute_tick(struct tm *t, TimeUnits units_changed) {
 }
 
 void init_layer(CommonWordsData *layer, GRect rect, GFont font) {
-  GColor color = persist_exists(101) && persist_read_int(101) ? GColorWhite : GColorBlack;
+  GColor color = persist_exists(101) && persist_read_int(101) ? GColorBlack : GColorWhite;
   layer->label = text_layer_create(rect);
-  text_layer_set_background_color(layer->label, color);
-  text_layer_set_text_color(layer->label, (color % 2) + 1);
+  text_layer_set_background_color(layer->label, GColorClear);
+  text_layer_set_text_color(layer->label, color);
   text_layer_set_font(layer->label, font);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(layer->label));
 }
@@ -240,10 +240,17 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       slide_in(&layers[DATE].in_animation, &layers[DATE]);
       animation_schedule(&layers[DATE].in_animation.animation);
       break;
-    case INVERT:
+    case WATCHFACE_INVERT:
       persist_write_int(101, new_tuple->value->uint8);
-      do_deinit();
-      handle_init();
+      GColor color = new_tuple->value->uint8 ? GColorWhite : GColorBlack;
+      window_set_background_color(window, color);
+      color = color == GColorBlack ? GColorWhite : GColorBlack;
+      for (int i = 0; i < NUM_LAYERS; ++i)
+    //so we aren't animating the date layer twice.
+      {
+        text_layer_set_text_color(layers[i].label, color);
+      }
+      break;
   }
 }
 
@@ -295,18 +302,21 @@ void handle_init() {
 
   app_message_open(64, 64);
 
-  int batt = 0, blue = 0, low = 0;
+  int batt = 0, blue = 0, low = 0, invert = 0;
   if (persist_exists(123) && persist_read_int(123))
     batt = 1;
   if (persist_exists(456) && persist_read_int(456))
     blue = 1;
   if (persist_exists(789) && persist_read_int(789))
     low  = 1;
+  if (persist_exists(101) && persist_read_int(101))
+    invert = 1;
 
   Tuplet initial_values[] = {
     TupletInteger(WATCHFACE_BATT_KEY, batt),
     TupletInteger(WATCHFACE_BLUE_KEY, blue),
-    TupletInteger(WATCHFACE_LOW_DATE, low)
+    TupletInteger(WATCHFACE_LOW_DATE, low),
+    TupletInteger(WATCHFACE_INVERT, invert)
   };
 
   sync_buffer = calloc(sizeof(uint8_t), 64);
