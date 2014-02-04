@@ -26,7 +26,8 @@ uint8_t *sync_buffer;
 enum SettingsKey {
   WATCHFACE_BATT_KEY = 0,
   WATCHFACE_BLUE_KEY = 1,
-  WATCHFACE_LOW_DATE = 2
+  WATCHFACE_LOW_DATE = 2,
+  INVERT = 3
 };
 
 Window *window;
@@ -40,6 +41,9 @@ typedef struct CommonWordsData {
 } CommonWordsData;
 
 CommonWordsData *layers;
+
+void handle_init();
+static void do_deinit();
 
 void slide_out(PropertyAnimation *animation, CommonWordsData *layer) {
   Layer* text_layer = text_layer_get_layer(layer->label);
@@ -118,9 +122,10 @@ static void handle_minute_tick(struct tm *t, TimeUnits units_changed) {
 }
 
 void init_layer(CommonWordsData *layer, GRect rect, GFont font) {
+  GColor color = persist_exists(101) && persist_read_int(101) ? GColorBlack : GColorClear;
   layer->label = text_layer_create(rect);
-  text_layer_set_background_color(layer->label, GColorClear);
-  text_layer_set_text_color(layer->label, GColorWhite);
+  text_layer_set_background_color(layer->label, color);
+  text_layer_set_text_color(layer->label, !color);
   text_layer_set_font(layer->label, font);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(layer->label));
 }
@@ -235,6 +240,10 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       slide_in(&layers[DATE].in_animation, &layers[DATE]);
       animation_schedule(&layers[DATE].in_animation.animation);
       break;
+    case INVERT:
+      persist_write_int(101, new_tuple->value->uint8);
+      do_deinit();
+      handle_init();
   }
 }
 
@@ -243,7 +252,8 @@ void handle_init() {
   window = window_create();
   const bool animated = false;
   window_stack_push(window, animated);
-  window_set_background_color(window, GColorBlack);
+  GColor color = persist_exists(101) && persist_read_int(101) ? GColorBlack : GColorClear;
+  window_set_background_color(window, color);
 
   Layer *root_layer = window_get_root_layer(window);
   GRect frame = layer_get_frame(root_layer);

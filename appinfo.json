@@ -12,7 +12,8 @@
   "appKeys": {
     "battery": 0,
     "vibrate": 1,
-    "lowdate": 2
+    "lowdate": 2,
+    "invert": 3
   },
   "resources": {
     "media": [
