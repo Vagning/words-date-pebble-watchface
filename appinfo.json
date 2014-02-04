@@ -13,7 +13,8 @@
     "battery": 0,
     "vibrate": 1,
     "lowdate": 2,
-    "invert": 3
+    "invert": 3,
+    "apostrophe": 4
   },
   "resources": {
     "media": [

@@ -27,7 +27,8 @@ enum SettingsKey {
   WATCHFACE_BATT_KEY = 0,
   WATCHFACE_BLUE_KEY = 1,
   WATCHFACE_LOW_DATE = 2,
-  WATCHFACE_INVERT = 3
+  WATCHFACE_INVERT = 3,
+  WATCHFACE_APOS = 4
 };
 
 Window *window;
@@ -246,10 +247,16 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       window_set_background_color(window, color);
       color = color == GColorBlack ? GColorWhite : GColorBlack;
       for (int i = 0; i < NUM_LAYERS; ++i)
-    //so we aren't animating the date layer twice.
       {
         text_layer_set_text_color(layers[i].label, color);
       }
+      break;
+    case WATCHFACE_APOS:
+      persist_write_int(112, new_tuple->value->uint8);
+      time_t now1 = time(NULL);
+      struct tm *t1 = localtime(&now1);
+      layers[TENS].update(t1, layers[TENS].buffer);
+      app_log(APP_LOG_LEVEL_WARNING, "words-date-pebble-watchface", 189, "Appsync failed:");
       break;
   }
 }
@@ -302,7 +309,7 @@ void handle_init() {
 
   app_message_open(64, 64);
 
-  int batt = 0, blue = 0, low = 0, invert = 0;
+  int batt = 0, blue = 0, low = 0, invert = 0, apos = 0;
   if (persist_exists(123) && persist_read_int(123))
     batt = 1;
   if (persist_exists(456) && persist_read_int(456))
@@ -311,12 +318,15 @@ void handle_init() {
     low  = 1;
   if (persist_exists(101) && persist_read_int(101))
     invert = 1;
+  if (persist_exists(112) && persist_read_int(112))
+    apos = 1;
 
   Tuplet initial_values[] = {
     TupletInteger(WATCHFACE_BATT_KEY, batt),
     TupletInteger(WATCHFACE_BLUE_KEY, blue),
     TupletInteger(WATCHFACE_LOW_DATE, low),
-    TupletInteger(WATCHFACE_INVERT, invert)
+    TupletInteger(WATCHFACE_INVERT, invert),
+    TupletInteger(WATCHFACE_APOS, apos)
   };
 
   sync_buffer = calloc(sizeof(uint8_t), 64);
