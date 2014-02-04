@@ -158,7 +158,6 @@ void fuzzy_hours_to_words(struct tm *t, char* words) {
 
 void fuzzy_dates_to_words(struct tm *t, char* words) {
   if (persist_exists(789) && persist_read_int(789)) {
-    app_log(APP_LOG_LEVEL_WARNING, "num2words", 161, "should update");
     int fuzzy_months = t->tm_mon;
     size_t remaining = BUFFER_SIZE;
     memset(words, 0, BUFFER_SIZE);
