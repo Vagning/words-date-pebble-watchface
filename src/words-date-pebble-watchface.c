@@ -218,6 +218,8 @@ static void sync_error_callback(DictionaryResult dict_error, AppMessageResult ap
 static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tuple, const Tuple* old_tuple, void* context) {
   switch (key) {
     case WATCHFACE_BATT_KEY:
+      if (new_tuple->value->uint8 == persist_read_int(123))
+        break;
       persist_write_int(123, new_tuple->value->uint8);
       if(new_tuple->value->uint8) {
         accel_tap_service_subscribe(&accel_tap_handler);
@@ -226,6 +228,8 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       }
       break;
     case WATCHFACE_BLUE_KEY:
+      if (new_tuple->value->uint8 == persist_read_int(456))
+        break;
       persist_write_int(456, new_tuple->value->uint8);
       if(new_tuple->value->uint8) {
         bluetooth_connection_service_subscribe (&bluetooth_handler);
@@ -234,14 +238,14 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       }
       break;
     case WATCHFACE_LOW_DATE:
+      if (new_tuple->value->uint8 == persist_read_int(789))
+        break;
       persist_write_int(789, new_tuple->value->uint8);
-      time_t now = time(NULL);
-      struct tm *t = localtime(&now);
-      layers[DATE].update(t, layers[DATE].buffer);
-      slide_in(&layers[DATE].in_animation, &layers[DATE]);
-      animation_schedule(&layers[DATE].in_animation.animation);
+      update_layer(&layers[DATE]);
       break;
     case WATCHFACE_INVERT:
+      if (new_tuple->value->uint8 == persist_read_int(101))
+        break;
       persist_write_int(101, new_tuple->value->uint8);
       GColor color = new_tuple->value->uint8 ? GColorWhite : GColorBlack;
       window_set_background_color(window, color);
@@ -252,11 +256,18 @@ static void sync_tuple_changed_callback(const uint32_t key, const Tuple* new_tup
       }
       break;
     case WATCHFACE_APOS:
+      if (new_tuple->value->uint8 == persist_read_int(112))
+        break;
       persist_write_int(112, new_tuple->value->uint8);
-      time_t now1 = time(NULL);
-      struct tm *t1 = localtime(&now1);
-      layers[TENS].update(t1, layers[TENS].buffer);
-      app_log(APP_LOG_LEVEL_WARNING, "words-date-pebble-watchface", 189, "Appsync failed:");
+      time_t now = time(NULL);
+      struct tm *t = localtime(&now);
+      if (t->tm_min == 0) {
+        for (int i = 0; i < 2; ++i) {
+          update_layer(&layers[i]);
+        }
+      } else if (t->tm_min < 10) {
+        update_layer(&layers[TENS]);
+      }
       break;
   }
 }
@@ -298,8 +309,7 @@ void handle_init() {
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
 
-  for (int i = 0; i < NUM_LAYERS - 1; ++i)
-  //so we aren't animating the date layer twice.
+  for (int i = 0; i < NUM_LAYERS; ++i)
   {
     layers[i].update(t, layers[i].buffer);
     slide_in(&layers[i].in_animation, &layers[i]);
