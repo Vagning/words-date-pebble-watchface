@@ -57,6 +57,7 @@
 	</p>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/javascript">
+		var dictionary;
 		$().ready(function() {
 			window.applicationCache.addEventListener('updateready', onUpdateReady);
 			function onUpdateReady() {
@@ -64,17 +65,20 @@
   					window.location.reload();
   				}
 			}
-			var dictionary;
 			try {
 				dictionary = JSON.parse(localStorage["dictionary"]);
 			}
 			catch(e) {
 				dictionary = {'battery':0, 'vibrate':0, 'lowdate': 0, 'invert': 0, 'apostrophe': 0};
 			}
-			for(option in dictionary) {
-				if(dictionary[option])
-					$("#" + option).addClass("btn-primary");
-			};
+			$("button").each(function(index) {
+				if(!(typeof dictionary[$(this).attr("id")] === 'undefined')) {
+					if(dictionary[$(this).attr("id")] === 1)
+						$(this).addClass("btn-primary");
+				} else {
+					dictionary[$(this).attr("id")] = 0;
+				}
+			});
 		    $(".option").click(function(){
 		    	var new_val = dictionary[$(this).attr("id")] + 1;
 		        dictionary[$(this).attr("id")] = new_val % 2;
