@@ -2,41 +2,41 @@
 
 static const char* const ONES[] = {
   "",
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine"
+  "en",
+  "to",
+  "tre",
+  "fire",
+  "fem",
+  "seks",
+  "syv",
+  "otte",
+  "ni"
 };
 
 static const char* const TEENS[] ={
   "",
-  "eleven",
-  "twelve",
-  "thirteen",
-  "four",
-  "fifteen",
-  "six",
-  "seven",
-  "eight",
-  "nine"
+  "elleve",
+  "tolv",
+  "tretten",
+  "fjorten",
+  "femten",
+  "seksten",
+  "sytten",
+  "atten",
+  "nitten"
 };
 
 static const char* const TENS[] = {
   "",
-  "ten",
-  "twenty",
-  "thirty",
-  "forty",
-  "fifty",
-  "sixty",
-  "seventy",
-  "eighty",
-  "ninety"
+  "ti",
+  "tyve",
+  "trevide",
+  "fyrre",
+  "halvtreds",
+  "treds",
+  "halvfjers",
+  "firs",
+  "halvfems"
 };
 
 static const char* const MONTHS[] = {
@@ -44,12 +44,12 @@ static const char* const MONTHS[] = {
   "feb ",
   "mar ",
   "apr ",
-  "may ",
+  "maj ",
   "jun ",
   "jul ",
   "aug ",
   "sep ",
-  "oct ",
+  "okt ",
   "nov ",
   "dec "
 };
